@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">TodoApp</string>
+    <string name="no_todos_available">There is no todo. Click the red button to add a new todo.</string>
+    <string name="name_label">Name</string>
+    <string name="save_todo">Save todo</string>
+    <string name="cancel">Cancel</string>
+    <string name="category">Category</string>
+    <string name="todo_name">Todo name</string>
+    <string name="completion_date">Completion date</string>
+    <string name="todo_has_been_added">Todo has been added.</string>
+    <string name="category_work">Work</string>
+    <string name="category_shopping">Shopping</string>
+    <string name="category_other">Other</string>
+    <string name="saving">Saving</string>
+    <string name="question_retry_save">Failed to save the data. Do you want to retry the save?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="fill_todo_name">Fill the todo name field.</string>
+</resources>

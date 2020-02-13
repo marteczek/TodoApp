@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TodoApp</string>
+    <string name="no_todos_available">Nie utworzono zadania. Kliknij w czerwony przycisk, żeby utworzyć nowe zadanie.</string>
+    <string name="save_todo">Zapisz zadanie</string>
+    <string name="todo_name">Nazwa zadania</string>
+    <string name="name_label">Nazwa</string>
+    <string name="cancel">Anuluj</string>
+    <string name="category">Kategoria</string>
+    <string name="category_other">Inne</string>
+    <string name="category_shopping">Zakupy</string>
+    <string name="category_work">Praca</string>
+    <string name="completion_date">Data wykonania</string>
+    <string name="todo_has_been_added">Zadanie zostało dodane.</string>
+    <string name="no">Nie</string>
+    <string name="question_retry_save">Zapisywanie danych nie powiodło się. Czy chcesz ponowić zapis?</string>
+    <string name="saving">Zapisywanie</string>
+    <string name="yes">Tak</string>
+    <string name="fill_todo_name">Wypełnij pole nazwa zadania.</string>
+</resources>
