@@ -35,7 +35,7 @@ public class TodoService {
     public LiveData<SaveTodoStatus> insertTodo(final Todo todo) {
         MutableLiveData<SaveTodoStatus> status = new MutableLiveData<>();
         dbHelper.execute(() -> {
-            try{
+            try {
                 long id = todoDao.insert(todo);
                 long error = -1L;
                 if (id != error) {
@@ -53,7 +53,7 @@ public class TodoService {
 
     public void deleteTodo(final Todo todo) {
         dbHelper.execute(() -> {
-            try{
+            try {
                 if (todo != null) {
                     todoDao.deleteById(todo.getId());
                 }

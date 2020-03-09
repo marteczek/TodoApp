@@ -1,12 +1,17 @@
 package com.marteczek.todoapp.activity;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -18,7 +23,6 @@ import android.widget.Toast;
 import com.marteczek.todoapp.R;
 import com.marteczek.todoapp.application.daggerconfiguration.viewmodelfactory.ViewModelFactory;
 import com.marteczek.todoapp.database.entity.Todo;
-import com.marteczek.todoapp.database.entity.type.TaskCategory;
 import com.marteczek.todoapp.service.SaveTodoStatus;
 import com.marteczek.todoapp.viewmodel.TodoEditorViewModel;
 
@@ -35,6 +39,7 @@ import dagger.android.AndroidInjection;
 public class TodoEditorActivity extends AppCompatActivity {
 
     private static final String STATE_COMPLETION_DATE = "state_completed_date";
+    private static final String DIALOG_COMPLETION_DATE = "dialog_completion_date";
 
     private TodoEditorViewModel viewModel;
 
@@ -59,8 +64,16 @@ public class TodoEditorActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         viewModel = new ViewModelProvider(this, viewModelFactory).get(TodoEditorViewModel.class);
+        bindViewModelData();
         bindUIViews();
         configureCategorySpinner();
+    }
+
+    private void bindViewModelData() {
+        LiveData<SaveTodoStatus> lastInsertTodoStatus = viewModel.getLastInsertTodoStatus();
+        if (lastInsertTodoStatus != null) {
+            viewModel.getLastInsertTodoStatus().observe(this, this::onTodoSavingResult);
+        }
     }
 
     private void bindUIViews() {
@@ -75,29 +88,16 @@ public class TodoEditorActivity extends AppCompatActivity {
     }
 
     private void configureCategorySpinner() {
-        ArrayAdapter<CategoryItem> categoryAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, new ArrayList<>());
-        categoryAdapter.add(new CategoryItem(TaskCategory.OTHER, getString(R.string.category_other)));
-        categoryAdapter.add(new CategoryItem(TaskCategory.WORK, getString(R.string.category_work)));
-        categoryAdapter.add(new CategoryItem(TaskCategory.SHOPPING, getString(R.string.category_shopping)));
+        ArrayAdapter<TodoEditorViewModel.CategoryItem> categoryAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, new ArrayList<>(viewModel.getAllCategories(this)));
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         categorySpinner.setAdapter(categoryAdapter);
     }
 
     private void enterCompletionDate(View view) {
-        final Calendar calendar = Calendar.getInstance();
-        if (completionDate != null) {
-            calendar.setTime(completionDate);
-        }
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        DatePickerDialog picker = new DatePickerDialog(this,
-                (v, y, m, d) -> {
-                    completionDate = new GregorianCalendar(y, m, d).getTime();
-                    updateCompletionDate();
-                }, year, month, day);
-        picker.show();
+        DialogFragment completionDateDialog = new DatePickerDialogFragment(completionDate);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        completionDateDialog.show(transaction, DIALOG_COMPLETION_DATE);
     }
 
     @Override
@@ -113,12 +113,12 @@ public class TodoEditorActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
         long date = savedInstanceState.getLong(STATE_COMPLETION_DATE, -1L);
         if (date != -1L) {
-            completionDate = new Date(date);
-            updateCompletionDate();
+            updateCompletionDate(new Date(date));
         }
     }
 
-    private void updateCompletionDate() {
+    private void updateCompletionDate(Date date) {
+        completionDate = date;
         DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(getApplicationContext());
         completionDateEditText.setText(dateFormat.format(completionDate));
     }
@@ -126,8 +126,9 @@ public class TodoEditorActivity extends AppCompatActivity {
     private void saveTodo(View view) {
         String todoName = todoNameEditText.getText().toString();
         if (!todoName.isEmpty()) {
-            CategoryItem categoryItem = (CategoryItem) categorySpinner.getSelectedItem();
-            String category = categoryItem == null ? null : categoryItem.key;
+            TodoEditorViewModel.CategoryItem categoryItem =
+                    (TodoEditorViewModel.CategoryItem) categorySpinner.getSelectedItem();
+            String category = categoryItem == null ? null : categoryItem.getKey();
             Todo todo = new Todo(todoName, completionDate, category);
             viewModel.insertTodo(todo).observe(this, this::onTodoSavingResult);
         } else {
@@ -158,18 +159,31 @@ public class TodoEditorActivity extends AppCompatActivity {
         finish();
     }
 
-    private static class CategoryItem {
-        String key;
-        String text;
+    public static class DatePickerDialogFragment extends DialogFragment {
+        private Date completionDate;
 
-        CategoryItem(String key, String text) {
-            this.key = key;
-            this.text = text;
+        public DatePickerDialogFragment() {
         }
 
+        private DatePickerDialogFragment(Date completionDate) {
+            this.completionDate = completionDate;
+        }
+
+        @NonNull
         @Override
-        @NonNull public String toString() {
-            return text;
+        public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+            TodoEditorActivity activity = (TodoEditorActivity) getActivity();
+            final Calendar calendar = Calendar.getInstance();
+            if (completionDate != null) {
+                calendar.setTime(completionDate);
+            }
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+            assert activity != null;
+            return new DatePickerDialog(activity,
+                    (v, y, m, d) -> activity.updateCompletionDate(new GregorianCalendar(y, m, d).getTime()),
+                    year, month, day);
         }
     }
 }
