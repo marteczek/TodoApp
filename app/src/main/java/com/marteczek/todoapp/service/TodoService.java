@@ -12,8 +12,12 @@ import com.marteczek.todoapp.database.entity.Todo;
 
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import static com.marteczek.todoapp.application.Configuration.Debug.E;
 
+@Singleton
 public class TodoService {
 
     private static final String TAG = "TodoService";
@@ -22,6 +26,7 @@ public class TodoService {
 
     private final TodoDatabaseHelper dbHelper;
 
+    @Inject
     public TodoService(TodoDao todoDao, TodoDatabaseHelper todoDatabaseHelper) {
         this.todoDao = todoDao;
         this.dbHelper = todoDatabaseHelper;

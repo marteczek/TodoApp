@@ -9,12 +9,12 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 
-@Module
-public class ServiceModule {
-
-    @Singleton
-    @Provides
-    TodoService todoService(TodoDao todoDao, TodoDatabaseHelper todoDatabaseHelper) {
-        return new TodoService(todoDao, todoDatabaseHelper);
-    }
-}
+//@Module
+//public class ServiceModule {
+//
+//    @Singleton
+//    @Provides
+//    TodoService todoService(TodoDao todoDao, TodoDatabaseHelper todoDatabaseHelper) {
+//        return new TodoService(todoDao, todoDatabaseHelper);
+//    }
+//}

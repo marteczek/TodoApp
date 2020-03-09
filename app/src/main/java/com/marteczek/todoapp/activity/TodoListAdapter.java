@@ -45,7 +45,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
             Todo todo = todos.get(position);
             holder.nameTextView.setText(todo.getName());
             Date date = todo.getCompletionDate();
-            holder.executionDateTextView.setText(date == null ? "" : dateFormat.format(date));
+            holder.completionDateTextView.setText(date == null ? "" : dateFormat.format(date));
             String category = todo.getCategory();
             String categoryName = "";
             if (category != null) {
@@ -66,7 +66,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
             holder.categoryTextView.setText(categoryName);
         } else {
             holder.nameTextView.setText("");
-            holder.executionDateTextView.setText("");
+            holder.completionDateTextView.setText("");
             holder.categoryTextView.setText("");
         }
     }
@@ -91,13 +91,13 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
 
     class TodoViewHolder extends RecyclerView.ViewHolder {
         private final TextView nameTextView;
-        private final TextView executionDateTextView;
+        private final TextView completionDateTextView;
         private final TextView categoryTextView;
 
         private TodoViewHolder(View itemView) {
             super(itemView);
             nameTextView = itemView.findViewById(R.id.todoName);
-            executionDateTextView = itemView.findViewById(R.id.completion_date);
+            completionDateTextView = itemView.findViewById(R.id.completion_date);
             categoryTextView = itemView.findViewById(R.id.category);
         }
     }
